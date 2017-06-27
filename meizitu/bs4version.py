@@ -31,7 +31,8 @@ class Meizitu(object):
         if html:
             soup = BeautifulSoup(html, 'lxml')
             # 返回所有a元素
-            a_all = soup.find('p', class_='url').find_all('a')
+            p_all = soup.find_all('p', class_='url')
+            a_all = p_all[1].find_all('a')
             return a_all
 
     # 用来处理进一步页面分析包含照片的张数,返回最大值,然后调用处理函数进行下载url获取
@@ -90,10 +91,10 @@ class Meizitu(object):
 
 if __name__ == '__main__':
     test = Meizitu()
-    url = 'hp://www.mzitu.com/all/'
+    url = 'http://www.mzitu.com/all/'
     a_all = test.parse_a_elements(url)
     itemdict = test.a_handle(a_all)
     for key, value in itemdict.items():
-        test.create_document(key)
+        test.create_document(key.replace('?', '_'))
         img_down_list = test.parse_img_url(value)
         test.download(img_down_list)
