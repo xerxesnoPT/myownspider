@@ -103,10 +103,10 @@ class Voanews_crawl(object):
             print(e)
 
 
-    def write2word(self, savename, date):
-        savename = savename+'.doc'
-        with open(savename, 'w') as f:
-            f.writelines(date)
+    # def write2word(self, savename, date):
+    #     savename = savename+'.doc'
+    #     with open(savename, 'w') as f:
+    #         f.writelines(date)
 
 # 该方法为爬取a标签层数,根据观察,默认设置为2层.否则会爬取到美国新闻所有年份
     def get_all_link(self, url,level=2):

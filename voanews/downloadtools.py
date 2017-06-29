@@ -63,9 +63,9 @@ class Writeto_docx(object):
             time = data['发布时间']
             savename = re.sub(r'[\/:*?"<>|]','-',title)
             head = document.add_heading(title,0)
-            head.add_run(title).bold = True
+            head.add_run().bold = True
             p = document.add_heading(auther+'\n'+time)
-            p.add_run(auther).italic = True
+            p.add_run().italic = True
             for text in doctext:
                 if text.startswith('http'):
                     imio = self.write_img(text)
