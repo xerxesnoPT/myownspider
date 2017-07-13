@@ -11,7 +11,6 @@ def create_question(question_text, days):
     return Question(question_text=question_text, pub_date=time)
 
 
-
 class QuestionMethodTest(TestCase):
     def test_was_published_recently_with_future_question(self):
         time = timezone.now() + datetime.timedelta(days=30)
@@ -34,47 +33,45 @@ class QuestionViewTest(TestCase):
         '''如果问题不存在，给出提示'''
         response = self.client.get(reverse('blog:index'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'No blog are available')
+        self.assertContains(response, 'No blog are available.')
         self.assertQuerysetEqual(response.context['latest_question_list'], [])
 
     def test_index_view_with_a_past_question(self):
-        create_question(question_text='Past question', days=-3).save()
+        create_question(question_text='Past question', days=-30)
         response = self.client.get(reverse('blog:index'))
-        self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['latest_question_list'],
-                                 ['<Question: Past question>'])
+                                 ['<Question:Past question>'])
+
     def test_index_view_with_a_future_question(self):
-        create_question(question_text='Future question', days=30).save()
+        create_question(question_text='Future question', days=30)
         response = self.client.get(reverse('blog:index'))
-        self.assertContains(response, 'No blog are available')
-        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'No blog are available.')
         self.assertQuerysetEqual(response.context['latest_question_list'], [])
 
     def test_index_view_with_past_future_question(self):
-        create_question(question_text='Past question', days=-30).save()
-        create_question(question_text='Future question', days=30).save()
+        create_question(question_text='Past question', days=-30)
+        create_question(question_text='Future question', days=30)
         response = self.client.get(reverse('blog:index'))
-        self.assertEqual(response.status_code, 200)
         self.assertQuerysetEqual(response.context['latest_question_list'],
-                                 ['<Question: Past question>'])
+                                 ['<Question:Past question>'])
 
     def test_index_view_with_two_past_question(self):
-        create_question(question_text='Past question1', days=-30).save()
-        create_question(question_text='Past question2', days=-4).save()
+        create_question(question_text='Past question1', days=-30)
+        create_question(question_text='Past question2', days=-4)
         response = self.client.get(reverse('blog:index'))
         self.assertQuerysetEqual(response.context['latest_question_list'],
-                                 ['<Question: Past question2>', '<Question: Past question1>'])
+                                 ['<Question:Past question1>', '<Question:Past question2>'])
 
 
-# class QuestionDetailViewTests(TestCase):
-#     def test_future_question(self):
-#         future_question = create_question(question_text='Future question', days=30).save()
-#         url = reverse('blog:detail', args=(future_question.id,))
-#         response = self.client.get(url)
-#         self.assertEqual(response.status_code, 404)
-#
-#     def test_past_question(self):
-#         past_question = create_question(question_text='Past question', days=-4).save()
-#         url = reverse('blog:detail', args=(Question.objects.values('id'),))
-#         response = self.client.get(url)
-#         self.assertContains(response, past_question.question_text)
+class QuestionDetailViewTests(TestCase):
+    def test_future_question(self):
+        future_question = create_question(question_text='Future question', days=30)
+        url = reverse('blog:detail', args=(future_question.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_past_question(self):
+        past_question = create_question(question_text='Past question', days=-4)
+        url = reverse('blog:detail', args=(past_question.id,))
+        response = self.client.get(url)
+        self.assertContains(response, past_question.question_text)
